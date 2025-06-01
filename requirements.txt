@@ -1,3 +1,7 @@
-Django==5.1.6
+Django>=4.2,<5.0
 celery==5.4.0
 amqp==5.3.1
+python-dotenv
+django-celery-beat==2.5.0
+requests==2.31.0
+redis==5.0.1
