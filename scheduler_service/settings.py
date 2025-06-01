@@ -30,6 +30,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'scheduler_service.wsgi.application'
 
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.dummy'
+    }
+}
+
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Asia/Seoul'
 USE_I18N = True
