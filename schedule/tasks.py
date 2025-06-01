@@ -1,3 +1,4 @@
+from celery import Celery
 import requests
 from celery import shared_task
 import os
@@ -49,6 +50,15 @@ import os
         
 #마이크로서비스 테스트용!!!!!!
 
+# 환경 변수로 설정된 Celery 브로커 주소 사용
+NOTIFY_QUEUE_BROKER = os.getenv("CELERY_BROKER_URL", "amqp://localhost")
+
+# 직접 task 인스턴스를 만들지 않고 전역 app 이용
+app = Celery('scheduler_service')
+app.conf.broker_url = NOTIFY_QUEUE_BROKER
+
+
+
 @shared_task
 def send_letter_reminders():
     print("✅ 테스트용 루틴 알림 작업 실행됨!")
@@ -61,8 +71,14 @@ def send_letter_reminders():
         return
 
     for routine in routines:
-        # 여기선 큐로 보내는 대신 단순 print
         print(f"📬 예약된 루틴 → {routine['username']} | {routine['time']} | {routine['email']}")
+        
+        # 🔥 큐로 task 전송: 문자열로 task 경로 지정
+        app.send_task(
+            'notify.tasks.send_notification',
+            args=[routine['email'], routine['username'], routine['time']],
+            queue='notification_queue'  # 👈 반드시 지정해줘야 함!
+        )
         
 def send_notification(routine):
     NOTIFICATION_URL = os.getenv("NOTIFICATION_SERVICE_URL", "http://localhost:8005/notify/email/")
