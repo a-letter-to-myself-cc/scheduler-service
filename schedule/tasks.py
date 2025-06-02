@@ -49,12 +49,26 @@ import os
         
 #마이크로서비스 테스트용!!!!!!
 
+<<<<<<< Updated upstream
+=======
+# 환경 변수로 설정된 Celery 브로커 주소 사용
+NOTIFY_QUEUE_BROKER = os.getenv("CELERY_BROKER_URL", "amqp://localhost")
+
+# 직접 task 인스턴스를 만들지 않고 전역 app 이용
+app = Celery('scheduler_service')
+app.conf.broker_url = NOTIFY_QUEUE_BROKER
+
+# 환경 변수로 routine_service 주소를 지정, 기본값은 컨테이너 이름 사용
+ROUTINE_API_URL = os.getenv("ROUTINE_SERVICE_URL", "http://routine_service:8003/api/routines/today/")
+
+
+>>>>>>> Stashed changes
 @shared_task
 def send_letter_reminders():
     print("✅ 테스트용 루틴 알림 작업 실행됨!")
 
     try:
-        response = requests.get("http://localhost:8003/api/routines/today/")
+        response = requests.get(ROUTINE_API_URL)
         routines = response.json()
     except Exception as e:
         print("❌ 루틴 요청 실패:", e)
@@ -76,4 +90,3 @@ def send_notification(routine):
         print(f"📬 이메일 요청 완료 → {routine.user.email}, 응답 코드: {response.status_code}")
     except Exception as e:
         print("❌ 이메일 요청 실패:", e)
-        

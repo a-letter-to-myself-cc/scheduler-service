@@ -25,5 +25,5 @@ ENV DB_NAME=$DB_NAME \
     DB_PORT=$DB_PORT \
     SECRET_KEY=$SECRET_KEY
 
-# Celery worker 실행을 위한 기본 명령어 (docker-compose에서 오버라이드됨)
-CMD ["celery", "-A", "scheduler_service", "worker", "--loglevel=info"] 
+# Django 서버 실행
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8004"]
