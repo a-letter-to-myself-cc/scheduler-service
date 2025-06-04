@@ -58,7 +58,7 @@ app = Celery('scheduler_service')
 app.conf.broker_url = NOTIFY_QUEUE_BROKER
 
 NOTIFICATION_SERVICE_URL = os.getenv("NOTIFICATION_SERVICE_URL", "http://notification_service:8005/notify/email/")
-ROUTINE_SERVICE_URL = os.getenv("ROUTINE_SERVICE_URL", "http://routine_service:8003/api/routines/today/")
+ROUTINE_SERVICE_URL = os.getenv("ROUTINE_SERVICE_URL", "http://routine-service:8003/api/routines/today/")
 
 @shared_task
 def send_letter_reminders():
@@ -76,7 +76,7 @@ def send_letter_reminders():
         
         # 🔥 큐로 task 전송: 문자열로 task 경로 지정
         app.send_task(
-            'notify.tasks.send_notification',
+            'notify.send_notification',
             args=[routine['email'], routine['username'], routine['time']],
             queue='notification_queue'  # 👈 반드시 지정해줘야 함!
         )
