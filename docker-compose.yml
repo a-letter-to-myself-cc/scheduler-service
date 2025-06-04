@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  scheduler-service:
+    build: .
+    container_name: scheduler-service
+    restart: always
+    ports:
+      - "8004:8004"
+    networks:
+      - schedule-internal-net
+      - auth-share-net
+
+  scheduler-worker:
+    build: .
+    container_name: scheduler-worker
+    command: celery -A scheduler_service worker --loglevel=info --pool=solo -Q scheduler_queue
+    networks:
+      - schedule-internal-net
+      - auth-share-net
+    depends_on:
+      - rabbitmq
+
+  scheduler-beat:
+    build: .
+    container_name: scheduler-beat
+    command: celery -A scheduler_service beat --loglevel=info
+    networks:
+      - schedule-internal-net
+      - auth-share-net
+    depends_on:
+      - rabbitmq
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    networks:
+      - schedule-internal-net
+      - auth-share-net
+
+networks:
+  schedule-internal-net:
+    external: true
+  auth-share-net:
+    external: true

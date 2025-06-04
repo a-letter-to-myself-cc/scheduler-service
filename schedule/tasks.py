@@ -25,7 +25,7 @@ import os
 #     print(f"오늘 요일: {today}, 날짜: {current_day}")
 
 #     # 🟡 루틴 정보 API 호출 (routine-service)
-#     ROUTINE_API_URL = os.getenv("ROUTINE_SERVICE_URL", "http://localhost:8003/api/routines/today/")
+#     ROUTINE_API_URL = os.getenv("ROUTINE_SERVICE_URL", "http://localhost:8303/api/routines/today/")
 #     try:
 #         response = requests.get(ROUTINE_API_URL)
 #         if response.status_code != 200:
@@ -57,14 +57,15 @@ NOTIFY_QUEUE_BROKER = os.getenv("CELERY_BROKER_URL", "amqp://localhost")
 app = Celery('scheduler_service')
 app.conf.broker_url = NOTIFY_QUEUE_BROKER
 
-
+NOTIFICATION_SERVICE_URL = os.getenv("NOTIFICATION_SERVICE_URL", "http://notification_service:8005/notify/email/")
+ROUTINE_SERVICE_URL = os.getenv("ROUTINE_SERVICE_URL", "http://routine_service:8003/api/routines/today/")
 
 @shared_task
 def send_letter_reminders():
     print("✅ 테스트용 루틴 알림 작업 실행됨!")
 
     try:
-        response = requests.get("http://localhost:8003/api/routines/today/")
+        response = requests.get(ROUTINE_SERVICE_URL)
         routines = response.json()
     except Exception as e:
         print("❌ 루틴 요청 실패:", e)
@@ -81,10 +82,8 @@ def send_letter_reminders():
         )
         
 def send_notification(routine):
-    NOTIFICATION_URL = os.getenv("NOTIFICATION_SERVICE_URL", "http://localhost:8005/notify/email/")
-
     try:
-        response = requests.post(NOTIFICATION_URL, json={
+        response = requests.post(NOTIFICATION_SERVICE_URL, json={
             "email": routine.user.email,
             "username": routine.user.username,
             "time": str(routine.time)
