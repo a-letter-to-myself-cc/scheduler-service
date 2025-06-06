@@ -51,7 +51,7 @@ import os
 #마이크로서비스 테스트용!!!!!!
 
 # 환경 변수로 설정된 Celery 브로커 주소 사용
-NOTIFY_QUEUE_BROKER = os.getenv("CELERY_BROKER_URL", "amqp://localhost")
+NOTIFY_QUEUE_BROKER = os.getenv("CELERY_BROKER_URL", "amqp://guest:guest@rabbitmq-service:5672//")
 
 # 직접 task 인스턴스를 만들지 않고 전역 app 이용
 app = Celery('scheduler_service')
