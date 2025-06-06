@@ -57,7 +57,7 @@ NOTIFY_QUEUE_BROKER = os.getenv("CELERY_BROKER_URL", "amqp://localhost")
 app = Celery('scheduler_service')
 app.conf.broker_url = NOTIFY_QUEUE_BROKER
 
-NOTIFICATION_SERVICE_URL = os.getenv("NOTIFICATION_SERVICE_URL", "http://notification_service:8005/notify/email/")
+NOTIFICATION_SERVICE_URL = os.getenv("NOTIFICATION_SERVICE_URL", "http://notification-service:8005/notify/email/")
 ROUTINE_SERVICE_URL = os.getenv("ROUTINE_SERVICE_URL", "http://routine-service:8003/api/routines/today/")
 
 @shared_task
