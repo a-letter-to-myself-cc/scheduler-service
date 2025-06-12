@@ -4,5 +4,6 @@ from .views import *
 
 
 urlpatterns = [
+    #단순 상태 확인용
     path('scheduler/status/', celery_status, name='celery_status'),
 ]

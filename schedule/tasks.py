@@ -3,13 +3,10 @@ from celery import shared_task
 import requests
 import os
 
-# Celery 브로커 주소 등록
-app.conf.broker_url = os.getenv("CELERY_BROKER_URL", "amqp://guest:guest@rabbitmq-service:5672//")
-
 # 루틴 API URL
 ROUTINE_SERVICE_URL = os.getenv("ROUTINE_SERVICE_URL", "http://routine-service:8003/api/routines/today/")
 
-@shared_task
+@shared_task(name="notify.send_notification")
 def send_letter_reminders():
     print("✅ 루틴 알림 작업 실행됨!")
 
@@ -24,7 +21,9 @@ def send_letter_reminders():
     for routine in routines:
         print(f"📬 예약된 루틴 → {routine['username']} | {routine['time']} | {routine['email']}")
         
-        app.send_task(
+        # app.send_task 대신 → shared_task를 통해 명시적 등록 없이 처리
+        from celery import current_app
+        current_app.send_task(
             'notify.send_notification',
             args=[routine['email'], routine['username'], routine['time']],
             queue='notification_queue'
