@@ -8,7 +8,6 @@ services:
     ports:
       - "8004:8004"
     networks:
-      - schedule-internal-net
       - auth-share-net
 
   scheduler-worker:
@@ -16,7 +15,6 @@ services:
     container_name: scheduler-worker
     command: celery -A scheduler_service worker --loglevel=info --pool=solo -Q scheduler_queue
     networks:
-      - schedule-internal-net
       - auth-share-net
     depends_on:
       - rabbitmq
@@ -26,7 +24,6 @@ services:
     container_name: scheduler-beat
     command: celery -A scheduler_service beat --loglevel=info
     networks:
-      - schedule-internal-net
       - auth-share-net
     depends_on:
       - rabbitmq
@@ -46,7 +43,6 @@ services:
       timeout: 10s
       retries: 10
     networks:
-      - schedule-internal-net
       - auth-share-net
 
 networks:
