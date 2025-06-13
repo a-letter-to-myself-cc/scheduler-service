@@ -6,7 +6,7 @@ import os
 # 루틴 API URL
 ROUTINE_SERVICE_URL = os.getenv("ROUTINE_SERVICE_URL", "http://routine-service:8003/api/routines/today/")
 
-@shared_task(name="notify.send_notification")
+@shared_task(name="schedule.tasks.send_letter_reminders")
 def send_letter_reminders():
     print("✅ 루틴 알림 작업 실행됨!")
 
